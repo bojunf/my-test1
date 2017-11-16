@@ -3,6 +3,17 @@ import sys
 import numpy as np
 from nltk.tree import Tree
 import copy
+import stanford_parser
+import stanford_ner
+from nltk import word_tokenize, pos_tag
+import sent_info
+import pattern_q
+
+
+parser = stanford_parser.parser()
+tagger = stanford_ner.tagger()
+
+wh_tag = ['how_many', 'how', 'why', 'which', 'whose', 'who_whom', 'where', 'when', 'what']
 
 
 def has_netags(tree, target_index, netags, target_tags):
@@ -397,7 +408,7 @@ def find_whose(tree, answer_or_ask):
 			head_tmp = 'Whose ' + noun_tmp[0]
 			out.append((head_tmp, tree_tmp))
 	iitem = 1
-		while(True):
+	while(True):
 		try:
 			vp[iitem]
 #				print(vp[iperson])
@@ -495,25 +506,75 @@ def find_a_wh(qtype, best_asent, bin_q):
 	
 #	print(some)
 	if (qtype == 'who_whom'):
-		some_who_whom = find_wh.find_who_whom(atree, tags, True)
+		some_who_whom = find_who_whom(atree, tags, True)
 		if (len(some_who_whom) > 0):
 			print(pattern_q.tree_to_string(some_who_whom[0][0]))
 #		print(some[0][0])
 	if (qtype == 'where'):
-		some_where = find_wh.find_where(atree, tags, True)
+		some_where = find_where(atree, tags, True)
 		if (len(some_where) > 0):
 			print(pattern_q.tree_to_string(some_where[0][0]))
 
 	
 	if (qtype == 'when'):
-		some_when = find_wh.find_when(atree, tags, True)
+		some_when = find_when(atree, tags, True)
 		if (len(some_when) > 0):
 			print(pattern_q.tree_to_string(some_when[0][0]))
 
 	
 	if (qtype == 'how_many'):
-		some_how_many = find_wh.find_how_many(atree, True)
+		some_how_many = find_how_many(atree, True)
 		if (len(some_how_many) > 0):
 			print(some_how_many[0][0])
+
+def find_q_wh(qtype, best_asent):
+	atree = parser.parse(best_asent.split())
+	tags = tagger.tag(word_tokenize(best_asent))
+
+
+
+
+	atree = sent_info.Get_tree(atree)
+#	print(atree)
+	np_index = 0
+	while (atree[np_index].label() != 'NP'):
+		np_index += 1
+	np = atree[np_index]
+	vp_index = np_index + 1
+	while (atree[vp_index].label() != 'VP' and vp_index < len(atree)):
+		vp_index += 1
+	vp = atree[vp_index]
+	if (atree[vp_index].label() != 'VP'):
+		return best_asent
+
+#	find_wh.has_netags(atree, vp_index, tags, ['PERSON'])
+
+	
+#	print(some)
+	if (qtype == 'who_whom'):
+		some_who_whom = find_who_whom(atree, tags, False)
+		if (len(some_who_whom) > 0):
+			print(some_who_whom[0][0] + ' ' + pattern_q.sent_to_bin_q(some_who_whom[0][1]))
+#			print(qtype, some_who_whom)
+#		print(some[0][0])
+	if (qtype == 'where'):
+		some_where = find_where(atree, tags, False)
+		if (len(some_where) > 0):
+			print(some_where[0][0] + ' ' + pattern_q.sent_to_bin_q(some_where[0][1]))
+#			print(qtype, some_where)
+
+	
+	if (qtype == 'when'):
+		some_when = find_when(atree, tags, False)
+		if (len(some_when) > 0):
+			print(some_when[0][0] + ' ' + pattern_q.sent_to_bin_q(some_when[0][1]))
+#			print(qtype, some_when)
+
+	
+	if (qtype == 'how_many'):
+		some_how_many = find_how_many(atree, False)
+		if (len(some_how_many) > 0):
+			print(some_how_many[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how_many[0][1]))
+#			print(qtype, some_how_many)
 
 

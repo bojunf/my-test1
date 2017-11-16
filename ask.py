@@ -68,9 +68,10 @@ for tree in trans_trees:
 	if (len(tree) <= 1):
 		continue
 	sent = gen_q.tree_to_string(tree)
-	sent = word_tokenize(sent)
-	tags = tagger.tag(sent)
-
+	sent_for_tag = word_tokenize(sent)
+	tags = tagger.tag(sent_for_tag)
+	for qtype in wh_tag:
+		find_wh.find_q_wh(qtype, sent)
 
 
 

@@ -70,7 +70,7 @@ for i in range(len(quest_trees)):
 
 
 
-	find_a_wh(qt, answer, q_to_s)
+	find_wh.find_a_wh(qt, answer, q_to_s)
 
 
 
