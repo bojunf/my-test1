@@ -46,10 +46,10 @@ def extract_stem(parse_trees):
 		tmp_p = []
 		flag_np = False
 		for i in range(len(tree)):
-			if (str(tree[i].label()) == 'NP' and not flag_np):
+			if (tree[i].label() == 'NP' and not flag_np):
 				tmp_p.append(gen_q.tree_to_string(tree[i]))
 				flag_np = True
-			if (str(tree[i].label()) == 'VP' and flag_np):
+			if (tree[i].label() == 'VP' and flag_np):
 				tmp_p.append(gen_q.tree_to_string(tree[i]))
 				transform.append(" ".join(tmp_p).replace('-LRB-', '(').replace('-RRB-', ')').replace('-lrb-', '(').replace('-rrb-', ')'))
 				continue

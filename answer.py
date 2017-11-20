@@ -16,14 +16,14 @@ import find_wh
 
 
 
-def find_a_bin(best_asent, bin_q):
-	nega = ["not", "n't"]
-	tmpa = word_tokenize(best_asent)
-	ans = 'Yes'
-	for i in tmpa:
-		if (i in nega):
-			return 'No'
-	return ans
+#def find_a_bin(best_asent, bin_q):
+#	nega = ["not", "n't"]
+#	tmpa = word_tokenize(best_asent)
+#	ans = 'Yes'
+#	for i in tmpa:
+#		if (i in nega):
+#			return 'No'
+#	return ans
 
 
 
@@ -38,12 +38,16 @@ sentence = parse_article.Get_sent_msal(file_name)
 
 sentence_r = find_a.lemma_verb(sentence)
 idf = find_a.cal_idf(sentence_r)
+maxname, maxnnp, maxnnps = parse_article.Get_person(file_name)
+#print(maxname, maxnnp, maxnnps)
+#sys.exit(0)
 
 quest = parse_article.Get_q(q_file)
 
 quest_trees = []
 
 for q in quest:
+	q = q.decode('utf-8')
 	t = parser.parse(q.split())
 	t = sent_info.Get_tree(t)
 #	print(t)
@@ -51,12 +55,16 @@ for q in quest:
 
 for i in range(len(quest_trees)):
 	qt, qtree = pattern_q.q_type(quest_trees[i])
-	if (qt == 'who'):
+	if (qt == 'who' or qt == 'whom'):
 		qt = 'who_whom'
+#	print(qt)
+#	print(quest_trees[i])
 #	print(qt)
 #	print(qtree)
 	if (qt is None):
 #		print(sentence[i])
+		print(quest[i])
+		print('\n')
 		continue
 	try:
 		q_to_s = pattern_q.bin_q_to_sent(qtree)
@@ -65,12 +73,15 @@ for i in range(len(quest_trees)):
 	
 	best_sent = find_a.best_match(q_to_s, sentence_r, idf)
 	answer = sentence[best_sent]
+#	answer = answer.encode('utf-8')
 #	print(q_to_s)
-	print(quest[i], answer)
+#	print(quest[i], answer)
+	print(quest[i])
 
-
-
-	find_wh.find_a_wh(qt, answer, q_to_s)
+#	answer_trans = pattern_s.extract_stem([answer])
+#	answer_trans = answer_trans[0]
+	find_wh.find_a_wh(qt, answer, q_to_s, 'a-' + file_name, maxname, maxnnp, maxnnps)
+	print('\n')
 
 
 

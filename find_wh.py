@@ -8,12 +8,19 @@ import stanford_ner
 from nltk import word_tokenize, pos_tag
 import sent_info
 import pattern_q
+import pattern_s
+import parse_article
 
 
 parser = stanford_parser.parser()
 tagger = stanford_ner.tagger()
 
 wh_tag = ['how_many', 'how', 'why', 'which', 'whose', 'who_whom', 'where', 'when', 'what']
+
+
+replace_name = ['He ', 'he ', 'She ', 'she ']
+replace_nnp = ['It ', 'it ']
+replace_nnps = ['They ', 'they ']
 
 
 def has_netags(tree, target_index, netags, target_tags):
@@ -86,10 +93,11 @@ def find_who_whom(tree, netags, answer_or_ask):
 	vp = tree[1]
 #	print(len(vp))
 	out = []
-	if (has_netags(tree, 0, netags, ['PERSON'])):
+	if (has_deeper_netags(tree, [0], netags, ['PERSON']) or has_pos_tags(tree, [0], ['PRP'])):
 		tree_tmp = copy.deepcopy(tree)
 		del tree_tmp[0]
 		if (answer_or_ask):
+#			print(tree[0])
 			out.append((tree[0], tree_tmp))
 		else:
 			out.append(('Who', tree_tmp))
@@ -101,7 +109,7 @@ def find_who_whom(tree, netags, answer_or_ask):
 	except:
 		return out
 	if (vp[iperson].label() == 'NP'):
-		if (has_deeper_netags(tree, [1, iperson], netags, ['PERSON'])):
+		if (has_deeper_netags(tree, [1, iperson], netags, ['PERSON']) or has_pos_tags(tree, [1, iperson], ['PRP'])):
 			tree_tmp = copy.deepcopy(tree)
 			if (answer_or_ask):
 				head_tmp = vp[iperson]
@@ -124,13 +132,13 @@ def find_who_whom(tree, netags, answer_or_ask):
 #			print(preposition)
 			obj = PP[1]
 #			print(obj)
-			if (preposition.label() in ['TO', 'IN'] and has_deeper_netags(tree, [1, iperson, 1], netags, ['PERSON'])):
+			if (preposition.label() in ['TO', 'IN'] and (has_deeper_netags(tree, [1, iperson, 1], netags, ['PERSON']) or has_pos_tags(tree, [1, iperson, 1], ['PRP']))):
 				tree_tmp = copy.deepcopy(tree)
 				if (answer_or_ask):
-					head_tmp = vp[1, iperson]
+					head_tmp = vp[iperson]
 #					print(head_tmp)
 				else:
-					head_tmp = preposition + ' whom'
+					head_tmp = preposition[0].title() + ' whom'
 				del tree_tmp[1, iperson]
 				out.append((head_tmp, tree_tmp))
 			break
@@ -183,11 +191,11 @@ def find_where(tree, netags, answer_or_ask):
 			if (preposition.label() in ['TO', 'IN'] and has_deeper_netags(tree, [1, ilocation, 1], netags, ['LOCATION'])):
 				tree_tmp = copy.deepcopy(tree)
 				if (answer_or_ask):
-					head_tmp = vp[ilocation, 1]
+					head_tmp = vp[ilocation]
 #					print(head_tmp)
 				else:
-					head_tmp = 'where'
-				del tree_tmp[1, ilocation, 1]
+					head_tmp = 'Where'
+				del tree_tmp[1, ilocation]
 				out.append((head_tmp, tree_tmp))
 			break
 		ilocation += 1
@@ -442,11 +450,11 @@ def find_whose(tree, answer_or_ask):
 		iitem += 1
 	return out
 
-def find_what(tree, answer_or_ask):
+def find_what(tree, netags, answer_or_ask):
 	np = tree[0]
 	vp = tree[1]
 	out = []
-	if (np.label() == 'NP'):
+	if (np.label() == 'NP' and not (has_netags(tree, 0, netags, ['PERSON'])  or has_pos_tags(tree, [0], ['PRP']) )):
 		tree_tmp = copy.deepcopy(tree)
 		del tree_tmp[0]
 		if (answer_or_ask):
@@ -463,7 +471,7 @@ def find_what(tree, answer_or_ask):
 #				print(vp[iperson])
 		except:
 			return out
-		if (vp[iitem].label() == 'NP'):
+		if (vp[iitem].label() == 'NP' and not (has_netags(tree, 0, netags, ['PERSON'])  or has_pos_tags(tree, [0], ['PRP']) )):
 			tree_tmp = copy.deepcopy(tree)
 			del tree_tmp[1, iitem]
 			if (answer_or_ask):
@@ -481,8 +489,16 @@ def find_what(tree, answer_or_ask):
 
 #find questions or answer
 
-def find_a_wh(qtype, best_asent, bin_q):
-	atree = parser.parse(best_asent.split())
+def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps):
+#	best_asent = best_asent.encode('utf-8')
+
+	tree123 = parser.parse(best_asent.split())
+	tree123 = sent_info.Get_tree(tree123)
+	answer_trans = pattern_s.extract_stem([tree123])
+	answer_trans = answer_trans[0]
+
+
+	atree = parser.parse(answer_trans.split())
 	tags = tagger.tag(word_tokenize(best_asent))
 
 
@@ -490,16 +506,17 @@ def find_a_wh(qtype, best_asent, bin_q):
 
 	atree = sent_info.Get_tree(atree)
 #	print(atree)
-	np_index = 0
-	while (atree[np_index].label() != 'NP'):
-		np_index += 1
-	np = atree[np_index]
-	vp_index = np_index + 1
-	while (atree[vp_index].label() != 'VP' and vp_index < len(atree)):
-		vp_index += 1
-	vp = atree[vp_index]
-	if (atree[vp_index].label() != 'VP'):
-		return best_asent
+#	print(atree)
+#	np_index = 0
+#	while (atree[np_index].label() != 'NP'):
+#		np_index += 1
+#	np = atree[np_index]
+#	vp_index = np_index + 1
+#	while (atree[vp_index].label() != 'VP' and vp_index < len(atree)):
+#		vp_index += 1
+#	vp = atree[vp_index]
+#	if (atree[vp_index].label() != 'VP'):
+#		return best_asent
 
 #	find_wh.has_netags(atree, vp_index, tags, ['PERSON'])
 
@@ -509,25 +526,124 @@ def find_a_wh(qtype, best_asent, bin_q):
 		some_who_whom = find_who_whom(atree, tags, True)
 		if (len(some_who_whom) > 0):
 			print(pattern_q.tree_to_string(some_who_whom[0][0]))
+			ans = pattern_q.tree_to_string(some_who_whom[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
 #		print(some[0][0])
 	if (qtype == 'where'):
 		some_where = find_where(atree, tags, True)
 		if (len(some_where) > 0):
 			print(pattern_q.tree_to_string(some_where[0][0]))
+			ans = pattern_q.tree_to_string(some_where[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
 
 	
 	if (qtype == 'when'):
 		some_when = find_when(atree, tags, True)
 		if (len(some_when) > 0):
 			print(pattern_q.tree_to_string(some_when[0][0]))
+			ans = pattern_q.tree_to_string(some_when[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
 
 	
 	if (qtype == 'how_many'):
 		some_how_many = find_how_many(atree, True)
 		if (len(some_how_many) > 0):
 			print(some_how_many[0][0])
+			ans = some_how_many[0][0]
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
 
-def find_q_wh(qtype, best_asent):
+	if (qtype == 'why'):
+		some_why = find_why(atree, True)
+		if (len(some_why) > 0):
+			print(pattern_q.tree_to_string(some_why[0][0]))
+			ans = pattern_q.tree_to_string(some_why[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
+
+	if (qtype == 'which'):
+		some_which = find_which(atree, True)
+		if (len(some_which) > 0):
+			print(pattern_q.tree_to_string(some_which[0][0]))
+			ans = pattern_q.tree_to_string(some_which[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
+
+	if (qtype == 'how'):
+		some_how = find_how(atree, True)
+		if (len(some_how) > 0):
+			print(pattern_q.tree_to_string(some_how[0][0]))
+			ans = pattern_q.tree_to_string(some_how[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
+
+	if (qtype == 'whose'):
+		some_whose = find_whose(atree, True)
+		if (len(some_whose) > 0):
+			print(pattern_q.tree_to_string(some_whose[0][0]))
+			ans = pattern_q.tree_to_string(some_whose[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
+
+#	if (qtype == 'why'):
+#		some_why = find_why(atree, True)
+#		if (len(some_why) > 0):
+#			print(pattern_q.tree_to_string(some_why[0][0]))
+#		else:
+#			print(best_asent)
+
+	if (qtype == 'what'):
+		some_what = find_what(atree, tags, True)
+		if (len(some_what) > 0):
+			print(pattern_q.tree_to_string(some_what[0][0]))
+			ans = pattern_q.tree_to_string(some_what[0][0])
+		else:
+			print(best_asent)
+			ans = pattern_q.tree_to_string(atree)
+#			ans = best_asent
+
+	if (qtype == 'binary'):
+		nega = ["not", "n't"]
+		tmpa = word_tokenize(best_asent)
+		ans = 'Yes'
+		for i in tmpa:
+			if (i in nega):
+#				print('No')
+				ans = 'No'
+#				return
+		print(ans)
+
+
+	ans = ans.encode('utf-8') + ' .' + '\n'
+	for i in replace_name:
+		ans.replace(i, maxname+' ')
+	for i in replace_nnp:
+		ans.replace(i, maxnnp+' ')
+	for i in replace_nnps:
+		ans.replace(i, maxnnps+' ')
+	ans = ans[0].upper() + ans[1:]
+
+	open(afilename, 'a').writelines([ans])
+
+def find_q_wh(best_asent, qfilename):
 	atree = parser.parse(best_asent.split())
 	tags = tagger.tag(word_tokenize(best_asent))
 
@@ -535,46 +651,140 @@ def find_q_wh(qtype, best_asent):
 
 
 	atree = sent_info.Get_tree(atree)
+
 #	print(atree)
-	np_index = 0
-	while (atree[np_index].label() != 'NP'):
-		np_index += 1
-	np = atree[np_index]
-	vp_index = np_index + 1
-	while (atree[vp_index].label() != 'VP' and vp_index < len(atree)):
-		vp_index += 1
-	vp = atree[vp_index]
-	if (atree[vp_index].label() != 'VP'):
-		return best_asent
+#	np_index = 0
+#	while (atree[np_index].label() != 'NP'):
+#		np_index += 1
+#	np = atree[np_index]
+#	vp_index = np_index + 1
+#	while (atree[vp_index].label() != 'VP' and vp_index < len(atree)):
+#		vp_index += 1
+#	vp = atree[vp_index]
+#	if (atree[vp_index].label() != 'VP'):
+#		return best_asent
 
 #	find_wh.has_netags(atree, vp_index, tags, ['PERSON'])
-
-	
+	for qtype in wh_tag:
+		
 #	print(some)
-	if (qtype == 'who_whom'):
-		some_who_whom = find_who_whom(atree, tags, False)
-		if (len(some_who_whom) > 0):
-			print(some_who_whom[0][0] + ' ' + pattern_q.sent_to_bin_q(some_who_whom[0][1]))
-#			print(qtype, some_who_whom)
-#		print(some[0][0])
-	if (qtype == 'where'):
-		some_where = find_where(atree, tags, False)
-		if (len(some_where) > 0):
-			print(some_where[0][0] + ' ' + pattern_q.sent_to_bin_q(some_where[0][1]))
-#			print(qtype, some_where)
+		if (qtype == 'who_whom'):
+			some_who_whom = find_who_whom(atree, tags, False)
+			if (len(some_who_whom) > 0):
+				print(some_who_whom[0][0] + ' ' + pattern_q.sent_to_bin_q(some_who_whom[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_who_whom[0][1])
+				wh_ques = some_who_whom[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+#				print(pattern_q.sent_to_bin_q(some_who_whom[0][1]))
+	#			print(qtype, some_who_whom)
+	#		print(some[0][0])
+		if (qtype == 'where'):
+			some_where = find_where(atree, tags, False)
+			if (len(some_where) > 0):
+				print(some_where[0][0] + ' ' + pattern_q.sent_to_bin_q(some_where[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_where[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_where[0][1])
+				wh_ques = some_where[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+	#			print(qtype, some_where)
 
-	
-	if (qtype == 'when'):
-		some_when = find_when(atree, tags, False)
-		if (len(some_when) > 0):
-			print(some_when[0][0] + ' ' + pattern_q.sent_to_bin_q(some_when[0][1]))
-#			print(qtype, some_when)
+		
+		if (qtype == 'when'):
+			some_when = find_when(atree, tags, False)
+			if (len(some_when) > 0):
+				print(some_when[0][0] + ' ' + pattern_q.sent_to_bin_q(some_when[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_when[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_when[0][1])
+				wh_ques = some_when[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+	#			print(qtype, some_when)
 
-	
-	if (qtype == 'how_many'):
-		some_how_many = find_how_many(atree, False)
-		if (len(some_how_many) > 0):
-			print(some_how_many[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how_many[0][1]))
-#			print(qtype, some_how_many)
+		
+		if (qtype == 'how_many'):
+			some_how_many = find_how_many(atree, False)
+			if (len(some_how_many) > 0):
+				print(some_how_many[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how_many[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_how_many[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_how_many[0][1])
+				wh_ques = some_how_many[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+	#			print(qtype, some_how_many)
+
+		if (qtype == 'why'):
+			some_why = find_why(atree, False)
+			if (len(some_why) > 0):
+				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
+				wh_ques = some_why[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+		if (qtype == 'which'):
+			some_which = find_which(atree, False)
+			if (len(some_which) > 0):
+				print(some_which[0][0] + ' ' + pattern_q.sent_to_bin_q(some_which[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_which[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_which[0][1])
+				wh_ques = some_which[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+		if (qtype == 'how'):
+			some_how = find_how(atree, False)
+			if (len(some_how) > 0):
+				print(some_how[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_how[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_how[0][1])
+				wh_ques = some_how[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+		if (qtype == 'whose'):
+			some_whose = find_whose(atree, False)
+			if (len(some_whose) > 0):
+				print(some_whose[0][0] + ' ' + pattern_q.sent_to_bin_q(some_whose[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_whose[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_whose[0][1])
+				wh_ques = some_whose[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+#		if (qtype == 'why'):
+#			some_why = find_why(atree, False)
+#			if (len(some_why) > 0):
+#				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
+#				bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
+#				wh_ques = some_why[0][0] + ' ' + bin_ques
+#				open(qfilename, 'a').writelines([wh_ques + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+		if (qtype == 'what'):
+			some_what = find_what(atree, tags, False)
+			if (len(some_what) > 0):
+				print(some_what[0][0] + ' ' + pattern_q.sent_to_bin_q(some_what[0][1]))
+#				print(pattern_q.sent_to_bin_q(some_what[0][1]))
+				bin_ques = pattern_q.sent_to_bin_q(some_what[0][1])
+				wh_ques = some_what[0][0] + ' ' + bin_ques
+				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+
+
+	try:
+		bin_ques = pattern_q.sent_to_bin_q(atree)
+		bin_ques = bin_ques[0].upper() + bin_ques[1:]
+		print(bin_ques)
+		open(qfilename, 'a').writelines(['binary' + '\t' + bin_ques.encode('utf-8') + '\n'])
+	except:
+		pass
+
+
+
+
 
 

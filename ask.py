@@ -12,6 +12,7 @@ from nltk import word_tokenize, pos_tag
 import get_wh_q
 import pattern_q
 import find_wh
+import sort_q
 
 wh_tag = ['how_many', 'how', 'why', 'which', 'whose', 'who_whom', 'where', 'when', 'what']
 
@@ -23,6 +24,9 @@ tagger = stanford_ner.tagger()
 
 sentence = parse_article.Get_sent_msal(fname)
 
+
+#for s in sentence:
+#	print(len(s))
 parse_trees = []
 for s in sentence:
 #	print(s)
@@ -32,6 +36,11 @@ for s in sentence:
 #	print(t)
 
 transform = pattern_s.extract_stem(parse_trees)
+
+#for s in transform:
+#	print(len(s))
+#sys.exit(0)
+
 
 trans_trees = []
 for s in transform:
@@ -61,19 +70,19 @@ for s in transform:
 
 
 
-question_wh = []
-question_binary = []
+#question_wh = []
+#question_binary = []
 
 for tree in trans_trees:
 	if (len(tree) <= 1):
 		continue
 	sent = gen_q.tree_to_string(tree)
-	sent_for_tag = word_tokenize(sent)
-	tags = tagger.tag(sent_for_tag)
-	for qtype in wh_tag:
-		find_wh.find_q_wh(qtype, sent)
+#	sent_for_tag = word_tokenize(sent)
+#	tags = tagger.tag(sent_for_tag)
+#	for qtype in wh_tag:
+	find_wh.find_q_wh(sent, 'q-' + fname)
 
-
+sort_q.sort('q-' + fname, N)
 
 
 
