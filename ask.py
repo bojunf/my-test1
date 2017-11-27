@@ -25,6 +25,12 @@ tagger = stanford_ner.tagger()
 sentence = parse_article.Get_sent_msal(fname)
 
 
+
+txtfile = fname.split('/')[-1]
+#print(txtfile)
+#sys.exit(0)
+
+
 #for s in sentence:
 #	print(len(s))
 parse_trees = []
@@ -80,9 +86,9 @@ for tree in trans_trees:
 #	sent_for_tag = word_tokenize(sent)
 #	tags = tagger.tag(sent_for_tag)
 #	for qtype in wh_tag:
-	find_wh.find_q_wh(sent, 'q-' + fname)
+	find_wh.find_q_wh(sent, 'q-' + txtfile)
 
-sort_q.sort('q-' + fname, N)
+sort_q.sort('q-' + txtfile, N)
 
 
 

@@ -52,7 +52,7 @@ def extract_stem(parse_trees):
 			if (tree[i].label() == 'VP' and flag_np):
 				tmp_p.append(gen_q.tree_to_string(tree[i]))
 				transform.append(" ".join(tmp_p).replace('-LRB-', '(').replace('-RRB-', ')').replace('-lrb-', '(').replace('-rrb-', ')'))
-				continue
+				break
 	return transform
 
 

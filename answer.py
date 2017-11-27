@@ -39,8 +39,11 @@ sentence = parse_article.Get_sent_msal(file_name)
 sentence_r = find_a.lemma_verb(sentence)
 idf = find_a.cal_idf(sentence_r)
 maxname, maxnnp, maxnnps = parse_article.Get_person(file_name)
-#print(maxname, maxnnp, maxnnps)
-#sys.exit(0)
+print(maxname, maxnnp, maxnnps)
+sys.exit(0)
+
+txtfile = file_name.split('/')[-1]
+
 
 quest = parse_article.Get_q(q_file)
 
@@ -80,7 +83,7 @@ for i in range(len(quest_trees)):
 
 #	answer_trans = pattern_s.extract_stem([answer])
 #	answer_trans = answer_trans[0]
-	find_wh.find_a_wh(qt, answer, q_to_s, 'a-' + file_name, maxname, maxnnp, maxnnps)
+	find_wh.find_a_wh(qt, answer, q_to_s, 'a-' + txtfile, maxname, maxnnp, maxnnps, quest[i])
 	print('\n')
 
 

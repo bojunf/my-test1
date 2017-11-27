@@ -11,6 +11,8 @@ import pattern_q
 import pattern_s
 import parse_article
 
+#sys.setdefaultencoding('utf8')
+
 
 parser = stanford_parser.parser()
 tagger = stanford_ner.tagger()
@@ -489,13 +491,17 @@ def find_what(tree, netags, answer_or_ask):
 
 #find questions or answer
 
-def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps):
+def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq):
 #	best_asent = best_asent.encode('utf-8')
 
 	tree123 = parser.parse(best_asent.split())
 	tree123 = sent_info.Get_tree(tree123)
 	answer_trans = pattern_s.extract_stem([tree123])
-	answer_trans = answer_trans[0]
+	try:
+		answer_trans = answer_trans[0]
+	except:
+		open(afilename, 'a').writelines([qqq.decode('utf-8').encode('utf-8') + '\t' + best_asent.decode('utf-8').encode('utf-8') + '\n'])
+		return
 
 
 	atree = parser.parse(answer_trans.split())
@@ -633,15 +639,18 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps):
 
 
 	ans = ans.encode('utf-8') + ' .' + '\n'
-	for i in replace_name:
-		ans.replace(i, maxname+' ')
-	for i in replace_nnp:
-		ans.replace(i, maxnnp+' ')
-	for i in replace_nnps:
-		ans.replace(i, maxnnps+' ')
+	if (maxname != None):
+		for i in replace_name:
+			ans.replace(i, maxname+' ')
+	if (maxnnp != None):
+		for i in replace_nnp:
+			ans.replace(i, maxnnp+' ')
+	if (maxnnps != None):
+		for i in replace_nnps:
+			ans.replace(i, maxnnps+' ')
 	ans = ans[0].upper() + ans[1:]
 
-	open(afilename, 'a').writelines([ans])
+	open(afilename, 'a').writelines([qqq + '\t' + ans])
 
 def find_q_wh(best_asent, qfilename):
 	atree = parser.parse(best_asent.split())
