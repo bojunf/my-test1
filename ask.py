@@ -35,6 +35,7 @@ txtfile = fname.split('/')[-1]
 #	print(len(s))
 parse_trees = []
 for s in sentence:
+#	s = s
 #	print(s)
 	t = parser.parse(s.split())
 	t = sent_info.Get_tree(t)
@@ -46,14 +47,6 @@ transform = pattern_s.extract_stem(parse_trees)
 #for s in transform:
 #	print(len(s))
 #sys.exit(0)
-
-
-trans_trees = []
-for s in transform:
-#	print(s)
-	t = parser.parse(s.split())
-	t = sent_info.Get_tree(t)
-	trans_trees.append(t)
 
 
 ##sample easy question
@@ -79,14 +72,42 @@ for s in transform:
 #question_wh = []
 #question_binary = []
 
-for tree in trans_trees:
-	if (len(tree) <= 1):
+
+
+
+
+# trans_trees = []
+# for s in transform:
+# #	print(s)
+# #	s = s.decode('utf-8').encode('utf-8')
+# #	s = s.decode('utf-8')
+# 	t = parser.parse(s.split())
+# 	t = sent_info.Get_tree(t)
+# 	trans_trees.append(t)
+
+
+
+# for tree in trans_trees:
+# 	if (len(tree) <= 1):
+# 		continue
+# 	sent = gen_q.tree_to_string(tree)
+# #	sent_for_tag = word_tokenize(sent)
+# #	tags = tagger.tag(sent_for_tag)
+# #	for qtype in wh_tag:
+# #	try:
+# 	find_wh.find_q_wh(sent, 'q-' + txtfile)
+
+for sent in transform:
+	if (len(word_tokenize(sent)) <= 1):
 		continue
-	sent = gen_q.tree_to_string(tree)
+#	sent = gen_q.tree_to_string(tree)
 #	sent_for_tag = word_tokenize(sent)
 #	tags = tagger.tag(sent_for_tag)
 #	for qtype in wh_tag:
-	find_wh.find_q_wh(sent, 'q-' + txtfile)
+	try:
+		find_wh.find_q_wh(sent, 'q-' + txtfile)
+	except:
+		continue
 
 sort_q.sort('q-' + txtfile, N)
 

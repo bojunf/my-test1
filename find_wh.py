@@ -500,8 +500,14 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 	try:
 		answer_trans = answer_trans[0]
 	except:
-		open(afilename, 'a').writelines([qqq.decode('utf-8').encode('utf-8') + '\t' + best_asent.decode('utf-8').encode('utf-8') + '\n'])
-		return
+		try:
+			print(qqq.decode('utf-8').encode('utf-8') + '\t' + best_asent.decode('utf-8').encode('utf-8'))
+			open(afilename, 'a').writelines([qqq.decode('utf-8').encode('utf-8') + '\t' + best_asent.decode('utf-8').encode('utf-8') + '\n'])
+			return
+		except:
+			print(qqq + '\t' + best_asent)
+			open(afilename, 'a').writelines([qqq + '\t' + best_asent])
+			return
 
 
 	atree = parser.parse(answer_trans.split())
@@ -531,19 +537,19 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 	if (qtype == 'who_whom'):
 		some_who_whom = find_who_whom(atree, tags, True)
 		if (len(some_who_whom) > 0):
-			print(pattern_q.tree_to_string(some_who_whom[0][0]))
+#			print(pattern_q.tree_to_string(some_who_whom[0][0]))
 			ans = pattern_q.tree_to_string(some_who_whom[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #		print(some[0][0])
 	if (qtype == 'where'):
 		some_where = find_where(atree, tags, True)
 		if (len(some_where) > 0):
-			print(pattern_q.tree_to_string(some_where[0][0]))
+#			print(pattern_q.tree_to_string(some_where[0][0]))
 			ans = pattern_q.tree_to_string(some_where[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
@@ -551,10 +557,10 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 	if (qtype == 'when'):
 		some_when = find_when(atree, tags, True)
 		if (len(some_when) > 0):
-			print(pattern_q.tree_to_string(some_when[0][0]))
+#			print(pattern_q.tree_to_string(some_when[0][0]))
 			ans = pattern_q.tree_to_string(some_when[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
@@ -562,50 +568,50 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 	if (qtype == 'how_many'):
 		some_how_many = find_how_many(atree, True)
 		if (len(some_how_many) > 0):
-			print(some_how_many[0][0])
+#			print(some_how_many[0][0])
 			ans = some_how_many[0][0]
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
 	if (qtype == 'why'):
 		some_why = find_why(atree, True)
 		if (len(some_why) > 0):
-			print(pattern_q.tree_to_string(some_why[0][0]))
+#			print(pattern_q.tree_to_string(some_why[0][0]))
 			ans = pattern_q.tree_to_string(some_why[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
 	if (qtype == 'which'):
 		some_which = find_which(atree, True)
 		if (len(some_which) > 0):
-			print(pattern_q.tree_to_string(some_which[0][0]))
+#			print(pattern_q.tree_to_string(some_which[0][0]))
 			ans = pattern_q.tree_to_string(some_which[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
 	if (qtype == 'how'):
 		some_how = find_how(atree, True)
 		if (len(some_how) > 0):
-			print(pattern_q.tree_to_string(some_how[0][0]))
+#			print(pattern_q.tree_to_string(some_how[0][0]))
 			ans = pattern_q.tree_to_string(some_how[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
 	if (qtype == 'whose'):
 		some_whose = find_whose(atree, True)
 		if (len(some_whose) > 0):
-			print(pattern_q.tree_to_string(some_whose[0][0]))
+#			print(pattern_q.tree_to_string(some_whose[0][0]))
 			ans = pattern_q.tree_to_string(some_whose[0][0])
 		else:
-			print(best_asent)
+#			print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
@@ -619,10 +625,10 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 	if (qtype == 'what'):
 		some_what = find_what(atree, tags, True)
 		if (len(some_what) > 0):
-			print(pattern_q.tree_to_string(some_what[0][0]))
+	#		print(pattern_q.tree_to_string(some_what[0][0]))
 			ans = pattern_q.tree_to_string(some_what[0][0])
 		else:
-			print(best_asent)
+	#		print(best_asent)
 			ans = pattern_q.tree_to_string(atree)
 #			ans = best_asent
 
@@ -635,21 +641,30 @@ def find_a_wh(qtype, best_asent, bin_q, afilename, maxname, maxnnp, maxnnps, qqq
 #				print('No')
 				ans = 'No'
 #				return
-		print(ans)
+	#	print(ans)
 
 
 	ans = ans.encode('utf-8') + ' .' + '\n'
 	if (maxname != None):
 		for i in replace_name:
+			if (ans == i+'.'):
+				ans = maxname + ' .'
+				break
 			ans.replace(i, maxname+' ')
 	if (maxnnp != None):
 		for i in replace_nnp:
+			if (ans == i+'.'):
+				ans = maxnnp + ' .'
+				break
 			ans.replace(i, maxnnp+' ')
 	if (maxnnps != None):
 		for i in replace_nnps:
+			if (ans == i+'.'):
+				ans = maxnnps + ' .'
+				break
 			ans.replace(i, maxnnps+' ')
 	ans = ans[0].upper() + ans[1:]
-
+	print(qqq + '\t' + ans)
 	open(afilename, 'a').writelines([qqq + '\t' + ans])
 
 def find_q_wh(best_asent, qfilename):
@@ -675,119 +690,121 @@ def find_q_wh(best_asent, qfilename):
 
 #	find_wh.has_netags(atree, vp_index, tags, ['PERSON'])
 	for qtype in wh_tag:
+		try:
 		
-#	print(some)
-		if (qtype == 'who_whom'):
-			some_who_whom = find_who_whom(atree, tags, False)
-			if (len(some_who_whom) > 0):
-				print(some_who_whom[0][0] + ' ' + pattern_q.sent_to_bin_q(some_who_whom[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_who_whom[0][1])
-				wh_ques = some_who_whom[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
-#				print(pattern_q.sent_to_bin_q(some_who_whom[0][1]))
-	#			print(qtype, some_who_whom)
-	#		print(some[0][0])
-		if (qtype == 'where'):
-			some_where = find_where(atree, tags, False)
-			if (len(some_where) > 0):
-				print(some_where[0][0] + ' ' + pattern_q.sent_to_bin_q(some_where[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_where[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_where[0][1])
-				wh_ques = some_where[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
-	#			print(qtype, some_where)
+	#	print(some)
+			if (qtype == 'who_whom'):
+				some_who_whom = find_who_whom(atree, tags, False)
+				if (len(some_who_whom) > 0):
+	#				print(some_who_whom[0][0] + ' ' + pattern_q.sent_to_bin_q(some_who_whom[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_who_whom[0][1])
+					wh_ques = some_who_whom[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+	#				print(pattern_q.sent_to_bin_q(some_who_whom[0][1]))
+		#			print(qtype, some_who_whom)
+		#		print(some[0][0])
+			if (qtype == 'where'):
+				some_where = find_where(atree, tags, False)
+				if (len(some_where) > 0):
+	#				print(some_where[0][0] + ' ' + pattern_q.sent_to_bin_q(some_where[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_where[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_where[0][1])
+					wh_ques = some_where[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+		#			print(qtype, some_where)
 
-		
-		if (qtype == 'when'):
-			some_when = find_when(atree, tags, False)
-			if (len(some_when) > 0):
-				print(some_when[0][0] + ' ' + pattern_q.sent_to_bin_q(some_when[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_when[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_when[0][1])
-				wh_ques = some_when[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
-	#			print(qtype, some_when)
+			
+			if (qtype == 'when'):
+				some_when = find_when(atree, tags, False)
+				if (len(some_when) > 0):
+	#				print(some_when[0][0] + ' ' + pattern_q.sent_to_bin_q(some_when[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_when[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_when[0][1])
+					wh_ques = some_when[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+		#			print(qtype, some_when)
 
-		
-		if (qtype == 'how_many'):
-			some_how_many = find_how_many(atree, False)
-			if (len(some_how_many) > 0):
-				print(some_how_many[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how_many[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_how_many[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_how_many[0][1])
-				wh_ques = some_how_many[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
-	#			print(qtype, some_how_many)
+			
+			if (qtype == 'how_many'):
+				some_how_many = find_how_many(atree, False)
+				if (len(some_how_many) > 0):
+	#				print(some_how_many[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how_many[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_how_many[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_how_many[0][1])
+					wh_ques = some_how_many[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+		#			print(qtype, some_how_many)
 
-		if (qtype == 'why'):
-			some_why = find_why(atree, False)
-			if (len(some_why) > 0):
-				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
-				wh_ques = some_why[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+			if (qtype == 'why'):
+				some_why = find_why(atree, False)
+				if (len(some_why) > 0):
+	#				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
+					wh_ques = some_why[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
 
-		if (qtype == 'which'):
-			some_which = find_which(atree, False)
-			if (len(some_which) > 0):
-				print(some_which[0][0] + ' ' + pattern_q.sent_to_bin_q(some_which[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_which[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_which[0][1])
-				wh_ques = some_which[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+			if (qtype == 'which'):
+				some_which = find_which(atree, False)
+				if (len(some_which) > 0):
+	#				print(some_which[0][0] + ' ' + pattern_q.sent_to_bin_q(some_which[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_which[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_which[0][1])
+					wh_ques = some_which[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
 
-		if (qtype == 'how'):
-			some_how = find_how(atree, False)
-			if (len(some_how) > 0):
-				print(some_how[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_how[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_how[0][1])
-				wh_ques = some_how[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+			if (qtype == 'how'):
+				some_how = find_how(atree, False)
+				if (len(some_how) > 0):
+	#				print(some_how[0][0] + ' ' + pattern_q.sent_to_bin_q(some_how[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_how[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_how[0][1])
+					wh_ques = some_how[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
 
-		if (qtype == 'whose'):
-			some_whose = find_whose(atree, False)
-			if (len(some_whose) > 0):
-				print(some_whose[0][0] + ' ' + pattern_q.sent_to_bin_q(some_whose[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_whose[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_whose[0][1])
-				wh_ques = some_whose[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+			if (qtype == 'whose'):
+				some_whose = find_whose(atree, False)
+				if (len(some_whose) > 0):
+	#				print(some_whose[0][0] + ' ' + pattern_q.sent_to_bin_q(some_whose[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_whose[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_whose[0][1])
+					wh_ques = some_whose[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
 
-#		if (qtype == 'why'):
-#			some_why = find_why(atree, False)
-#			if (len(some_why) > 0):
-#				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
-#				bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
-#				wh_ques = some_why[0][0] + ' ' + bin_ques
-#				open(qfilename, 'a').writelines([wh_ques + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+	#		if (qtype == 'why'):
+	#			some_why = find_why(atree, False)
+	#			if (len(some_why) > 0):
+	#				print(some_why[0][0] + ' ' + pattern_q.sent_to_bin_q(some_why[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_why[0][1]))
+	#				bin_ques = pattern_q.sent_to_bin_q(some_why[0][1])
+	#				wh_ques = some_why[0][0] + ' ' + bin_ques
+	#				open(qfilename, 'a').writelines([wh_ques + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
 
-		if (qtype == 'what'):
-			some_what = find_what(atree, tags, False)
-			if (len(some_what) > 0):
-				print(some_what[0][0] + ' ' + pattern_q.sent_to_bin_q(some_what[0][1]))
-#				print(pattern_q.sent_to_bin_q(some_what[0][1]))
-				bin_ques = pattern_q.sent_to_bin_q(some_what[0][1])
-				wh_ques = some_what[0][0] + ' ' + bin_ques
-				open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
-#				open(qfilename, 'a').writelines([bin_ques + '\n'])
-
+			if (qtype == 'what'):
+				some_what = find_what(atree, tags, False)
+				if (len(some_what) > 0):
+	#				print(some_what[0][0] + ' ' + pattern_q.sent_to_bin_q(some_what[0][1]))
+	#				print(pattern_q.sent_to_bin_q(some_what[0][1]))
+					bin_ques = pattern_q.sent_to_bin_q(some_what[0][1])
+					wh_ques = some_what[0][0] + ' ' + bin_ques
+					open(qfilename, 'a').writelines([qtype + '\t' + wh_ques.encode('utf-8') + '\n'])
+	#				open(qfilename, 'a').writelines([bin_ques + '\n'])
+		except:
+			pass
 
 	try:
 		bin_ques = pattern_q.sent_to_bin_q(atree)
 		bin_ques = bin_ques[0].upper() + bin_ques[1:]
-		print(bin_ques)
+#		print(bin_ques)
 		open(qfilename, 'a').writelines(['binary' + '\t' + bin_ques.encode('utf-8') + '\n'])
 	except:
 		pass

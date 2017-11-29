@@ -32,35 +32,71 @@ def Get_sent_msal(fname): # parse file that one line has multiple sentence
 	sentence = []
 	with io.open(fname, 'r', encoding="utf-8") as f:
 		for line in f.readlines():
+			sent_tmp = nltk.sent_tokenize(line)
+			for s in sent_tmp:
+				sentence.append(s)
+			
 #			line = line.decode('UTF-8')
-			s = nltk.word_tokenize(line)
-			if (s == []):
-				continue
-			sent_tmp = []
-			for ele in s:
-				if (ele != '.'):
-					sent_tmp.append(ele)
-				else:
-					sent_tmp.append(ele)
-					if (len(sent_tmp) > 50):
-						continue
-					if (len(sent_tmp) == 0):
-						continue
-					sentence.append(" ".join(sent_tmp))
-					sent_tmp = []
+			# s = nltk.word_tokenize(line)
+			# if (s == []):
+			# 	continue
+			# sent_tmp = []
+			# for ele in s:
+			# 	if (ele != '.'):
+			# 		sent_tmp.append(ele)
+			# 	else:
+			# 		sent_tmp.append(ele)
+			# 		if (len(sent_tmp) > 50):
+			# 			continue
+			# 		if (len(sent_tmp) == 0):
+			# 			continue
+			# 		sentence.append(" ".join(sent_tmp))
+			# 		sent_tmp = []
 
 #	if (len(sentence) > 10):
 #		sentence = sentence[:10]
 
 	return sentence
+
+
+def Get_sent_msal_q(fname): # parse file that one line has multiple sentence
+	sentence = []
+	with open(fname, 'r') as f:
+		for line in f.readlines():
+			sent_tmp = nltk.sent_tokenize(line)
+			for s in sent_tmp:
+				sentence.append(s + ' .')
+			
+#			line = line.decode('UTF-8')
+			# s = nltk.word_tokenize(line)
+			# if (s == []):
+			# 	continue
+			# sent_tmp = []
+			# for ele in s:
+			# 	if (ele != '.'):
+			# 		sent_tmp.append(ele)
+			# 	else:
+			# 		sent_tmp.append(ele)
+			# 		if (len(sent_tmp) > 50):
+			# 			continue
+			# 		if (len(sent_tmp) == 0):
+			# 			continue
+			# 		sentence.append(" ".join(sent_tmp))
+			# 		sent_tmp = []
+
+#	if (len(sentence) > 10):
+#		sentence = sentence[:10]
+
+	return sentence
+
 def Get_q(q_file):
 	quest = []
 	with open(q_file, 'r') as f:
 		for line in f.readlines():
 			arr = line.strip()
 			arr = arr.split()
-			if (len(arr) > 40):
-				continue
+#			if (len(arr) > 40):
+#				continue
 			if (len(arr) == 0):
 				continue
 			quest.append(" ".join(arr))

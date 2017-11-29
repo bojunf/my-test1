@@ -21,6 +21,8 @@ def sort(qfilename, N):
 	for wh in wh_tag:
 		for quest in dic[wh]:
 			tmp = quest + ' ?' + '\n'
+			tmp = tmp.replace('-LRB-', '(').replace('-RRB-', ')').replace('-lrb-', '(').replace('-rrb-', ')')
+			print(tmp)
 			out.append(tmp)
 			cnt += 1
 			if (cnt == N):

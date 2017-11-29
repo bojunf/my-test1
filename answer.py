@@ -39,8 +39,8 @@ sentence = parse_article.Get_sent_msal(file_name)
 sentence_r = find_a.lemma_verb(sentence)
 idf = find_a.cal_idf(sentence_r)
 maxname, maxnnp, maxnnps = parse_article.Get_person(file_name)
-print(maxname, maxnnp, maxnnps)
-sys.exit(0)
+# #print(maxname, maxnnp, maxnnps)
+# #sys.exit(0)
 
 txtfile = file_name.split('/')[-1]
 
@@ -53,8 +53,10 @@ for q in quest:
 	q = q.decode('utf-8')
 	t = parser.parse(q.split())
 	t = sent_info.Get_tree(t)
-#	print(t)
+#	print(t.label() + '\t' + q)
 	quest_trees.append(t)
+
+#sys.exit(0)
 
 for i in range(len(quest_trees)):
 	qt, qtree = pattern_q.q_type(quest_trees[i])
@@ -79,12 +81,15 @@ for i in range(len(quest_trees)):
 #	answer = answer.encode('utf-8')
 #	print(q_to_s)
 #	print(quest[i], answer)
-	print(quest[i])
+#	print(quest[i])
 
 #	answer_trans = pattern_s.extract_stem([answer])
 #	answer_trans = answer_trans[0]
-	find_wh.find_a_wh(qt, answer, q_to_s, 'a-' + txtfile, maxname, maxnnp, maxnnps, quest[i])
-	print('\n')
+	try:
+		find_wh.find_a_wh(qt, answer, q_to_s, 'a-' + txtfile, maxname, maxnnp, maxnnps, quest[i])
+	except:
+		print(quest[i] + '\t' + answer)
+#	print('\n')
 
 
 
